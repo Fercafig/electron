@@ -275,7 +275,7 @@ const watchEmbedder = function (embedder) {
 
 const isWebViewTagEnabledCache = new WeakMap();
 
-const isWebViewTagEnabled = function (contents) {
+export const isWebViewTagEnabled = function (contents: Electron.WebContents) {
   if (!isWebViewTagEnabledCache.has(contents)) {
     const webPreferences = contents.getLastWebPreferences() || {};
     isWebViewTagEnabledCache.set(contents, !!webPreferences.webviewTag);
@@ -284,7 +284,7 @@ const isWebViewTagEnabled = function (contents) {
   return isWebViewTagEnabledCache.get(contents);
 };
 
-const makeSafeHandler = function (channel, handler) {
+const makeSafeHandler = function (channel: string, handler) {
   return (event, ...args) => {
     if (isWebViewTagEnabled(event.sender)) {
       return handler(event, ...args);
@@ -295,11 +295,11 @@ const makeSafeHandler = function (channel, handler) {
   };
 };
 
-const handleMessage = function (channel, handler) {
+const handleMessage = function (channel: string, handler) {
   ipcMainInternal.handle(channel, makeSafeHandler(channel, handler));
 };
 
-const handleMessageSync = function (channel, handler) {
+const handleMessageSync = function (channel: string, handler) {
   ipcMainUtils.handleSync(channel, makeSafeHandler(channel, handler));
 };
 
@@ -388,5 +388,3 @@ const getGuest = function (guestInstanceId) {
   const guestInstance = guestInstances[guestInstanceId];
   if (guestInstance != null) return guestInstance.guest;
 };
-
-exports.isWebViewTagEnabled = isWebViewTagEnabled;
